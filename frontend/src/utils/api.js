@@ -48,11 +48,23 @@ export async function apiJson(path, opts = {}) {
   const auth = token ?? getStoredToken();
   if (auth) headers.Authorization = `Bearer ${auth}`;
 
-  const res = await fetch(`${base}${path}`, {
-    method,
-    headers,
-    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-  });
+  let res;
+  try {
+    res = await fetch(`${base}${path}`, {
+      method,
+      headers,
+      ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/failed to fetch|network error|load failed/i.test(msg) || err?.name === "TypeError") {
+      throw new Error(
+        `Cannot reach API at ${base}. Start the backend (cd backend → npm start) and ensure MongoDB connects, ` +
+          `or set REACT_APP_API_URL in frontend/.env if the API runs elsewhere.`
+      );
+    }
+    throw err;
+  }
 
   const text = await res.text();
   let data = {};

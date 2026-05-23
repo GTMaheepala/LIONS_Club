@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getApiBase } from "../utils/api";
 import { getPostAuthRedirect } from "../utils/access";
+import AuthBackgroundSlides from "../components/AuthBackgroundSlides";
 import "../styles/auth.css";
 
 export default function RegisterPage() {
@@ -19,7 +20,10 @@ export default function RegisterPage() {
   if (!ready) {
     return (
       <div className="auth-layout">
-        <p className="auth-brand">Loading…</p>
+        <AuthBackgroundSlides />
+        <div className="auth-stack">
+          <p className="auth-brand">Loading…</p>
+        </div>
       </div>
     );
   }
@@ -52,13 +56,15 @@ export default function RegisterPage() {
 
   return (
     <div className="auth-layout">
-      <div className="auth-brand">
-        <h1>LCMS</h1>
-        <p>Create your member account</p>
-      </div>
-      <div className="auth-card">
+      <AuthBackgroundSlides />
+      <div className="auth-stack">
+        <div className="auth-brand">
+          <h1>LCMS</h1>
+          <p>Create your member account</p>
+        </div>
+        <div className="auth-card">
         <h2>Sign up</h2>
-        <p style={{ fontSize: "0.85rem", color: "#4b5563", marginTop: "-0.5rem" }}>
+        <p className="auth-card-hint">
           New registrations stay on preview-only pages until an administrator approves you.
         </p>
         {!configured && (
@@ -106,7 +112,7 @@ export default function RegisterPage() {
               required
               minLength={8}
             />
-            <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+            <span className="auth-field-hint">
               At least 8 characters (same rule as API).
             </span>
           </div>
@@ -132,6 +138,7 @@ export default function RegisterPage() {
         <p className="auth-footer">
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
+      </div>
       </div>
     </div>
   );

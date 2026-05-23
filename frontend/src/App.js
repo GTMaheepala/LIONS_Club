@@ -13,6 +13,7 @@ import AdminOverview from "./pages/admin/AdminOverview";
 import AdminPendingMembers from "./pages/admin/AdminPendingMembers";
 import AdminAllMembers from "./pages/admin/AdminAllMembers";
 import AdminAddUser from "./pages/admin/AdminAddUser";
+import AdminFoundationContributors from "./pages/admin/AdminFoundationContributors";
 import AdminPlaceholder from "./pages/admin/AdminPlaceholder";
 import { getPostAuthRedirect } from "./utils/access";
 
@@ -74,16 +75,7 @@ function AppRoutes() {
         <Route path="members/pending" element={<AdminPendingMembers />} />
         <Route path="members" element={<AdminAllMembers />} />
         <Route path="settings/users/add" element={<AdminAddUser />} />
-        <Route
-          path="payments"
-          element={
-            <AdminPlaceholder
-              title="Payments & foundation history"
-              description="Proposal §6.3 · import read-only dues / voluntary gifts from legacy spreadsheets into member dashboards."
-              backTo="/admin"
-            />
-          }
-        />
+        <Route path="payments" element={<AdminFoundationContributors />} />
         <Route
           path="reports/district"
           element={

@@ -1,5 +1,6 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AuthBackgroundSlides from "../components/AuthBackgroundSlides";
 import "../styles/auth.css";
 
 const sampleSections = [
@@ -25,7 +26,10 @@ export default function WaitingRoomPage() {
   if (!ready) {
     return (
       <div className="auth-layout">
-        <p className="auth-brand">Loading…</p>
+        <AuthBackgroundSlides />
+        <div className="auth-stack">
+          <p className="auth-brand">Loading…</p>
+        </div>
       </div>
     );
   }

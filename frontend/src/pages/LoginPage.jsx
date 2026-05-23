@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getApiBase } from "../utils/api";
 import { getPostAuthRedirect } from "../utils/access";
+import AuthBackgroundSlides from "../components/AuthBackgroundSlides";
 import "../styles/auth.css";
 
 export default function LoginPage() {
@@ -19,7 +20,10 @@ export default function LoginPage() {
   if (!ready) {
     return (
       <div className="auth-layout">
-        <p className="auth-brand">Loading…</p>
+        <AuthBackgroundSlides />
+        <div className="auth-stack">
+          <p className="auth-brand">Loading…</p>
+        </div>
       </div>
     );
   }
@@ -49,16 +53,14 @@ export default function LoginPage() {
 
   return (
     <div className="auth-layout">
-      <div className="auth-brand">
-        <h1>LCMS</h1>
-        <p>Lions Club Membership System</p>
-      </div>
-      <div className="auth-card">
+      <AuthBackgroundSlides />
+      <div className="auth-stack">
+        <div className="auth-brand">
+          <h1>LCMS</h1>
+          <p>Lions Club Membership System</p>
+        </div>
+        <div className="auth-card">
         <h2>Sign in</h2>
-        <p style={{ fontSize: "0.85rem", color: "#4b5563", marginTop: "-0.5rem" }}>
-          Administrators use{" "}
-          <code style={{ fontSize: "0.82em" }}>superadmin@gmail.com</code>
-        </p>
         {!configured && (
           <div className="auth-alert" role="alert">
             Set <code>REACT_APP_API_URL</code> for this production build (e.g. in Vercel
@@ -104,6 +106,7 @@ export default function LoginPage() {
         <p className="auth-footer">
           No account? <Link to="/signup">Sign up</Link>
         </p>
+        </div>
       </div>
     </div>
   );

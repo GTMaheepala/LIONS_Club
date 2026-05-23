@@ -62,7 +62,7 @@ export default function AdminAddUser() {
     <div className="lcms-admin-card">
       <div className="lcms-page-header-row">
         <div>
-          <Link to="/admin" className="lcms-back-link">
+          <Link to="/admin/members" className="lcms-back-link">
             ← BACK
           </Link>
           <h1 className="lcms-page-title" style={{ marginTop: "0.65rem" }}>
