@@ -1,0 +1,533 @@
+/* LCMS admin shell — sidebar + dark header (proposal-aligned back-office UX) */
+
+.lcms-admin-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #eef1f6;
+  color: #1a2332;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.lcms-admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0 1rem 0 0.85rem;
+  min-height: 52px;
+  background: linear-gradient(90deg, #1a3d6c 0%, #243d5f 100%);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.lcms-admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0;
+}
+
+.lcms-admin-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.lcms-admin-menu-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lcms-admin-brand-text strong {
+  display: block;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.lcms-admin-brand-text small {
+  opacity: 0.85;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.lcms-admin-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.lcms-admin-top-actions span {
+  font-size: 0.85rem;
+  opacity: 0.92;
+}
+
+.lcms-admin-shell {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.lcms-admin-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 36, 0.45);
+  z-index: 15;
+}
+
+.lcms-admin-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  z-index: 16;
+}
+
+@media (max-width: 991px) {
+  .lcms-admin-sidebar.mobile-hidden {
+    display: none !important;
+  }
+
+  .lcms-admin-shell {
+    position: relative;
+  }
+}
+
+@media (min-width: 992px) {
+  .lcms-admin-sidebar-overlay {
+    display: none !important;
+  }
+
+  .lcms-admin-sidebar {
+    display: flex !important;
+  }
+}
+
+.lcms-admin-org {
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.lcms-admin-org-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9a227, #f4d03f);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.72rem;
+  color: #1a2332;
+}
+
+.lcms-admin-org-meta strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #1a2332;
+}
+
+.lcms-admin-org-meta span {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.lcms-admin-nav {
+  padding: 0.75rem 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.lcms-sidebar-link {
+  display: block;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.88rem;
+  color: #334155;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+
+.lcms-sidebar-link:hover {
+  background: #f1f5f9;
+}
+
+.lcms-sidebar-link.active {
+  background: #e8eef7;
+  color: #1a3d6c;
+  font-weight: 600;
+  border-left-color: #2563eb;
+}
+
+.lcms-nav-group-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.45rem 1rem 0.45rem 0.85rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.lcms-nav-group-summary::-webkit-details-marker {
+  display: none;
+}
+
+.lcms-nav-group[open] .lcms-nav-group-summary {
+  color: #64748b;
+}
+
+.lcms-admin-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.lcms-admin-content {
+  flex: 1;
+  padding: 1.5rem clamp(1rem, 3vw, 2.25rem);
+  overflow-y: auto;
+}
+
+.lcms-admin-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  max-width: 920px;
+}
+
+.lcms-page-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.lcms-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.lcms-back-link:hover {
+  text-decoration: underline;
+}
+
+.lcms-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.35rem;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.lcms-primary-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.lcms-primary-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.lcms-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 620px) {
+  .lcms-form-row-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lcms-form-field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.35rem;
+}
+
+.lcms-form-field input {
+  width: 100%;
+  padding: 0.58rem 0.72rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.lcms-form-field input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.lcms-form-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.lcms-role-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.lcms-role-meta strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.lcms-role-meta span {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+.lcms-toggle {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.lcms-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.lcms-toggle-ui {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background 0.2s ease;
+}
+
+.lcms-toggle-ui::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.lcms-toggle input:checked + .lcms-toggle-ui {
+  background: #2563eb;
+}
+
+.lcms-toggle input:checked + .lcms-toggle-ui::after {
+  transform: translateX(20px);
+}
+
+.lcms-page-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.lcms-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.lcms-stat-tile {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.lcms-stat-tile span {
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.lcms-stat-tile strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.85rem;
+  color: #0f172a;
+}
+
+.lcms-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+table.lcms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+table.lcms-table th,
+table.lcms-table td {
+  padding: 0.65rem 0.95rem;
+  text-align: left;
+  border-bottom: 1px solid #eef1f6;
+}
+
+table.lcms-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+}
+
+.lcms-chip {
+  display: inline-block;
+  padding: 0.14rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.lcms-chip-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.lcms-chip-approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.lcms-chip-admin {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.lcms-muted {
+  color: #64748b;
+}
+
+.lcms-admin-footer-note {
+  text-align: center;
+  font-size: 0.76rem;
+  color: #94a3b8;
+  padding: 0.75rem;
+}
+
+.lcms-btn-approve {
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  border: none;
+  background: #16a34a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.lcms-btn-approve:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.lcms-alert {
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.lcms-alert-err {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.lcms-alert-ok {
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.lcms-help-fab {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.72rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
+}
+
+.lcms-help-fab:hover {
+  filter: brightness(1.06);
+}
+
+.lcms-sidebar-logout {
+  margin: auto 1rem 1rem;
+  padding: 0.55rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-weight: 600;
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.lcms-sidebar-logout:hover {
+  background: #fef2f2;
+}
