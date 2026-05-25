@@ -14,7 +14,7 @@ const foundationContributionSchema = new mongoose.Schema(
     clubName: { type: String, trim: true, default: "" },
     paymentKind: {
       type: String,
-      enum: ["cash", "cheque"],
+      enum: ["cash", "cheque", "bank"],
       required: true,
     },
     cashRupees: { type: Number, default: null },

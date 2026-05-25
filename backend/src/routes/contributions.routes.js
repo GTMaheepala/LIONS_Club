@@ -7,6 +7,9 @@ const router = express.Router();
 router.use(attachUser, requireAdmin);
 
 router.get("/count", contributions.countLedger);
+router.get("/stats/top-club", contributions.topClubByMembers);
+router.get("/stats/clubs", contributions.clubLeaderboard);
+router.get("/stats/districts", contributions.districtLeaderboard);
 router.get("/", contributions.list);
 router.post("/", contributions.create);
 router.patch("/:id", contributions.update);

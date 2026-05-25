@@ -2,6 +2,7 @@
 
 .lcms-admin-root {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: #eef1f6;
@@ -369,9 +370,11 @@ a.lcms-dropdown-item {
 .lcms-admin-shell {
   display: flex;
   flex: 1 1 auto;
-  min-height: 0;
   /* Fill viewport under topbar so the sidebar footer stays pinned */
+  min-height: calc(100vh - 58px);
+  min-height: calc(100dvh - 58px);
   max-height: calc(100vh - 58px);
+  max-height: calc(100dvh - 58px);
 }
 
 .lcms-admin-sidebar-overlay {
@@ -567,8 +570,10 @@ a.lcms-dropdown-item {
 .lcms-admin-content {
   flex: 1;
   min-height: 0;
+  min-width: 0;
   padding: 1.5rem clamp(1rem, 3vw, 2.25rem);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .lcms-admin-card {
@@ -577,7 +582,16 @@ a.lcms-dropdown-item {
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   padding: clamp(1.25rem, 2vw, 1.75rem);
-  max-width: 920px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.lcms-placeholder-body {
+  margin: 0;
+  max-width: min(75ch, 100%);
+  line-height: 1.55;
 }
 
 .lcms-page-title {
@@ -839,7 +853,9 @@ a.lcms-btn-add-entry:visited {
 /* —— Admin overview dashboard (renewed UX) */
 
 .lcms-dash {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .lcms-dash-title {
@@ -947,6 +963,10 @@ a.lcms-btn-add-entry:visited {
   background: linear-gradient(180deg, #64748b 0%, #334155 115%);
 }
 
+.lcms-dash-stat--topclub::before {
+  background: linear-gradient(180deg, #34d399 0%, #059669 115%);
+}
+
 .lcms-dash-stat-top {
   display: flex;
   align-items: center;
@@ -977,6 +997,11 @@ a.lcms-btn-add-entry:visited {
 .lcms-dash-stat--admin .lcms-dash-stat-icon-wrap {
   background: #f1f5f9;
   color: #475569;
+}
+
+.lcms-dash-stat--topclub .lcms-dash-stat-icon-wrap {
+  background: #ecfdf5;
+  color: #047857;
 }
 
 .lcms-dash-stat-label {
@@ -1018,6 +1043,16 @@ a.lcms-btn-add-entry:visited {
   margin-top: 0.85rem;
   font-size: 0.785rem;
   color: #94a3b8;
+}
+
+.lcms-dash-stat-clubname {
+  color: #475569;
+  font-weight: 600;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .lcms-dash-panel {
@@ -1665,7 +1700,9 @@ table.lcms-table tr.lcms-row-flagged td {
 
 /* —— Users roster page */
 .lcms-users-page {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .lcms-users-page .lcms-admin-card {
@@ -1875,7 +1912,7 @@ table.lcms-table-users tbody tr:hover td {
 .lcms-users-cell-email {
   font-size: 0.8425rem;
   color: #475569;
-  max-width: min(17rem, 36vw);
+  max-width: min(36rem, 55vw);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1883,7 +1920,7 @@ table.lcms-table-users tbody tr:hover td {
 
 @media (max-width: 640px) {
   .lcms-users-cell-email {
-    max-width: 12rem;
+    max-width: min(16rem, 78vw);
   }
 }
 

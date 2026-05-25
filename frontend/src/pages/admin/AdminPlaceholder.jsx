@@ -12,7 +12,7 @@ export default function AdminPlaceholder({
         ← BACK
       </Link>
       <h1 className="lcms-page-title">{title}</h1>
-      <p style={{ margin: 0 }}>{description}</p>
+      <p className="lcms-placeholder-body lcms-muted">{description}</p>
     </div>
   );
 }

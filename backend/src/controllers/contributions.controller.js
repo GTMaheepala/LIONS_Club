@@ -35,8 +35,8 @@ function serialize(doc) {
 
 function buildCreate(body) {
   const paymentKind = body.paymentKind;
-  if (!["cash", "cheque"].includes(paymentKind)) {
-    return { error: "paymentKind must be cash or cheque." };
+  if (!["cash", "cheque", "bank"].includes(paymentKind)) {
+    return { error: "paymentKind must be cash, cheque, or bank." };
   }
 
   const contributorName = String(body.contributorName ?? "").trim();
@@ -103,7 +103,7 @@ function applyPatch(doc, body) {
   if (body.district !== undefined) doc.district = String(body.district ?? "").trim();
   if (body.clubName !== undefined) doc.clubName = String(body.clubName ?? "").trim();
   if (body.paymentKind !== undefined) {
-    if (!["cash", "cheque"].includes(body.paymentKind)) return "paymentKind must be cash or cheque.";
+    if (!["cash", "cheque", "bank"].includes(body.paymentKind)) return "paymentKind must be cash, cheque, or bank.";
     doc.paymentKind = body.paymentKind;
   }
   if (body.cashRupees !== undefined) doc.cashRupees = toNumNullable(body.cashRupees);
@@ -126,7 +126,9 @@ async function list(req, res) {
   const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
   const tag = typeof req.query.tag === "string" ? req.query.tag.trim() : "";
   const kind =
-    typeof req.query.kind === "string" && ["cash", "cheque"].includes(req.query.kind) ? req.query.kind : "";
+    typeof req.query.kind === "string" && ["cash", "cheque", "bank"].includes(req.query.kind)
+      ? req.query.kind
+      : "";
 
   if (district) q.district = new RegExp(`^${escapeRegex(district)}$`, "i");
   if (club) q.clubName = new RegExp(escapeRegex(club), "i");
@@ -187,9 +189,133 @@ async function countLedger(_req, res) {
   res.json({ total });
 }
 
+/**
+ * GET /api/contributions/stats/top-club — club with the most ledger rows (admin dashboard).
+ * Matches the contributor table: duplicate rows both count. Rows without a club name are ignored.
+ */
+async function topClubByMembers(_req, res) {
+  const pipeline = [
+    {
+      $addFields: {
+        clubTrim: { $trim: { input: { $ifNull: ["$clubName", ""] } } },
+      },
+    },
+    {
+      $match: {
+        $expr: { $gt: [{ $strLenCP: "$clubTrim" }, 0] },
+      },
+    },
+    {
+      $group: {
+        _id: "$clubTrim",
+        rowCount: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        clubName: "$_id",
+        rowCount: 1,
+        _id: 0,
+      },
+    },
+    { $sort: { rowCount: -1, clubName: 1 } },
+    { $limit: 1 },
+  ];
+
+  const rows = await FoundationContribution.aggregate(pipeline);
+  const top = rows[0];
+  if (!top) {
+    return res.json({ clubName: "", rowCount: 0 });
+  }
+  res.json({ clubName: top.clubName, rowCount: top.rowCount });
+}
+
+function clampStatsLimit(raw, fallback, cap) {
+  const n = parseInt(raw, 10);
+  if (!Number.isFinite(n) || n < 1) return fallback;
+  return Math.min(n, cap);
+}
+
+/**
+ * GET /api/contributions/stats/clubs — leaderboard by ledger rows per club (empty club omitted).
+ */
+async function clubLeaderboard(req, res) {
+  const limit = clampStatsLimit(req.query.limit, 50, 200);
+  const pipeline = [
+    {
+      $addFields: {
+        clubTrim: { $trim: { input: { $ifNull: ["$clubName", ""] } } },
+      },
+    },
+    {
+      $match: {
+        $expr: { $gt: [{ $strLenCP: "$clubTrim" }, 0] },
+      },
+    },
+    {
+      $group: {
+        _id: "$clubTrim",
+        rowCount: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        clubName: "$_id",
+        rowCount: 1,
+        _id: 0,
+      },
+    },
+    { $sort: { rowCount: -1, clubName: 1 } },
+    { $limit: limit },
+  ];
+
+  const clubs = await FoundationContribution.aggregate(pipeline);
+  res.json({ clubs });
+}
+
+/**
+ * GET /api/contributions/stats/districts — leaderboard by ledger rows per district (empty district omitted).
+ */
+async function districtLeaderboard(req, res) {
+  const limit = clampStatsLimit(req.query.limit, 30, 100);
+  const pipeline = [
+    {
+      $addFields: {
+        districtTrim: { $trim: { input: { $ifNull: ["$district", ""] } } },
+      },
+    },
+    {
+      $match: {
+        $expr: { $gt: [{ $strLenCP: "$districtTrim" }, 0] },
+      },
+    },
+    {
+      $group: {
+        _id: "$districtTrim",
+        rowCount: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        district: "$_id",
+        rowCount: 1,
+        _id: 0,
+      },
+    },
+    { $sort: { rowCount: -1, district: 1 } },
+    { $limit: limit },
+  ];
+
+  const districts = await FoundationContribution.aggregate(pipeline);
+  res.json({ districts });
+}
+
 module.exports = {
   list,
   countLedger,
+  topClubByMembers,
+  clubLeaderboard,
+  districtLeaderboard,
   create,
   update,
   remove,

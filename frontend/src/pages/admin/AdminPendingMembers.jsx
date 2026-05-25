@@ -49,7 +49,7 @@ export default function AdminPendingMembers() {
   }
 
   return (
-    <div className="lcms-admin-card" style={{ maxWidth: "100%" }}>
+    <div className="lcms-admin-card">
       <div className="lcms-page-header-row">
         <div>
           <Link to="/admin/members" className="lcms-back-link">

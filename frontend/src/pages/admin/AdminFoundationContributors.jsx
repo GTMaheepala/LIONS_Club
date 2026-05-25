@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { apiJson } from "../../utils/api";
 import "../../styles/adminDashboard.css";
@@ -247,7 +247,8 @@ function parseFlexibleDate(raw) {
 function csvRowToApiBody(ix, cols) {
   const contributorName = cellAt(ix, cols, "Name");
   const kindRaw = cellAt(ix, cols, "Kind").toLowerCase();
-  const paymentKind = kindRaw.includes("cheq") ? "cheque" : "cash";
+  const paymentKind =
+    kindRaw.includes("bank") ? "bank" : kindRaw.includes("cheq") ? "cheque" : "cash";
   const dateIso = parseFlexibleDate(cellAt(ix, cols, "Date"));
 
   if (!contributorName) return null;
@@ -282,6 +283,10 @@ function csvRowToApiBody(ix, cols) {
   if (paymentKind === "cash") {
     body.cashRupees = cellAt(ix, cols, "CashRs");
     body.cashCents = cellAt(ix, cols, "CashCts");
+  } else if (paymentKind === "bank") {
+    body.chequeAmount = cellAt(ix, cols, "ChequeAmt");
+    body.chequeBank = cellAt(ix, cols, "Bank");
+    body.chequeNumber = "";
   } else {
     body.chequeAmount = cellAt(ix, cols, "ChequeAmt");
     body.chequeBank = cellAt(ix, cols, "Bank");
@@ -293,6 +298,7 @@ function csvRowToApiBody(ix, cols) {
 
 export default function AdminFoundationContributors() {
   const { token } = useAuth();
+  const [searchParams] = useSearchParams();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -319,6 +325,13 @@ export default function AdminFoundationContributors() {
     const id = window.setTimeout(() => setDebouncedSearch(searchInput.trim()), 380);
     return () => window.clearTimeout(id);
   }, [searchInput]);
+
+  useEffect(() => {
+    const raw = searchParams.get("district");
+    if (raw != null && String(raw).trim() !== "") {
+      setDistrict(String(raw).trim());
+    }
+  }, [searchParams]);
 
   const buildQs = useCallback(() => {
     const p = new URLSearchParams();
@@ -407,8 +420,9 @@ export default function AdminFoundationContributors() {
       paymentKind: form.paymentKind,
       cashRupees: form.paymentKind === "cash" ? form.cashRupees : "",
       cashCents: form.paymentKind === "cash" ? form.cashCents : "",
-      chequeAmount: form.paymentKind === "cheque" ? form.chequeAmount : "",
-      chequeBank: form.paymentKind === "cheque" ? form.chequeBank : "",
+      chequeAmount:
+        form.paymentKind === "cheque" || form.paymentKind === "bank" ? form.chequeAmount : "",
+      chequeBank: form.paymentKind === "cheque" || form.paymentKind === "bank" ? form.chequeBank : "",
       chequeNumber: form.paymentKind === "cheque" ? form.chequeNumber : "",
       flagged: form.flagged,
       flagNote: form.flagNote,
@@ -548,7 +562,7 @@ export default function AdminFoundationContributors() {
   }
 
   return (
-    <div className="lcms-admin-card lcms-ledger-page" style={{ maxWidth: "100%" }}>
+    <div className="lcms-admin-card lcms-ledger-page">
       <Link to="/admin" className="lcms-back-link">
         ← BACK
       </Link>
@@ -673,6 +687,7 @@ export default function AdminFoundationContributors() {
                   <option value="">All</option>
                   <option value="cash">Cash</option>
                   <option value="cheque">Cheque</option>
+                  <option value="bank">Bank</option>
                 </select>
               </div>
             </div>
@@ -689,7 +704,9 @@ export default function AdminFoundationContributors() {
       </div>
 
       <p className="lcms-ledger-upload-hint lcms-muted">
-        <strong>CSV import:</strong> use <strong>Template</strong> headers. In Excel use <em>Save As → CSV UTF-8</em> before{" "}
+        <strong>CSV import:</strong> use <strong>Template</strong> headers.{" "}
+        <strong>Kind</strong> may be <strong>cash</strong>, <strong>cheque</strong>, or <strong>bank</strong> (cheque amounts and bank transfers use{" "}
+        <strong>ChequeAmt</strong> plus <strong>Bank</strong> column). In Excel use <em>Save As → CSV UTF-8</em> before{" "}
         <strong>Upload Excel</strong>. One spreadsheet row creates one ledger line.
       </p>
 
@@ -736,12 +753,14 @@ export default function AdminFoundationContributors() {
                           ? ` · ${Number(c.cashCents)} cts`
                           : ""}
                       </>
+                    ) : c.paymentKind === "bank" ? (
+                      <span className="lcms-muted">bank</span>
                     ) : (
                       <span className="lcms-muted">cheque</span>
                     )}
                   </td>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    {c.paymentKind === "cheque" ? (
+                    {c.paymentKind === "cheque" || c.paymentKind === "bank" ? (
                       <>
                         <strong>{formatMoney(c.chequeAmount)}</strong>
                         {(c.chequeBank || c.chequeNumber) && (
@@ -819,16 +838,6 @@ export default function AdminFoundationContributors() {
                 </div>
               </div>
               <div className="lcms-form-field">
-                <label htmlFor="ff-date">Contribution date</label>
-                <input
-                  id="ff-date"
-                  type="date"
-                  required
-                  value={form.contributionDate}
-                  onChange={(e) => setForm((f) => ({ ...f, contributionDate: e.target.value }))}
-                />
-              </div>
-              <div className="lcms-form-field">
                 <label htmlFor="ff-name">Contributor name</label>
                 <input
                   id="ff-name"
@@ -873,7 +882,22 @@ export default function AdminFoundationContributors() {
                 >
                   <option value="cash">Cash</option>
                   <option value="cheque">Cheque</option>
+                  <option value="bank">Bank</option>
                 </select>
+              </div>
+
+              <div className="lcms-form-field">
+                <label htmlFor="ff-date">Payment date</label>
+                <input
+                  id="ff-date"
+                  type="date"
+                  required
+                  value={form.contributionDate}
+                  onChange={(e) => setForm((f) => ({ ...f, contributionDate: e.target.value }))}
+                />
+                <span className="lcms-muted" style={{ fontSize: "0.8rem", display: "block", marginTop: "0.25rem" }}>
+                  Applies to cash, cheque, and bank transfers.
+                </span>
               </div>
 
               {form.paymentKind === "cash" ? (
@@ -899,7 +923,7 @@ export default function AdminFoundationContributors() {
                     />
                   </div>
                 </div>
-              ) : (
+              ) : form.paymentKind === "cheque" ? (
                 <>
                   <div className="lcms-form-field">
                     <label htmlFor="ff-chamt">Cheque amount</label>
@@ -929,6 +953,28 @@ export default function AdminFoundationContributors() {
                         onChange={(e) => setForm((f) => ({ ...f, chequeNumber: e.target.value }))}
                       />
                     </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="lcms-form-field">
+                    <label htmlFor="ff-bank-amt">Transfer amount</label>
+                    <input
+                      id="ff-bank-amt"
+                      type="number"
+                      step="any"
+                      value={form.chequeAmount}
+                      onChange={(e) => setForm((f) => ({ ...f, chequeAmount: e.target.value }))}
+                    />
+                  </div>
+                  <div className="lcms-form-field">
+                    <label htmlFor="ff-bank-name">Bank</label>
+                    <input
+                      id="ff-bank-name"
+                      value={form.chequeBank}
+                      onChange={(e) => setForm((f) => ({ ...f, chequeBank: e.target.value }))}
+                      placeholder="Sampath, BOC, HNB…"
+                    />
                   </div>
                 </>
               )}

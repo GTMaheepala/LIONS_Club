@@ -14,7 +14,8 @@ import AdminPendingMembers from "./pages/admin/AdminPendingMembers";
 import AdminAllMembers from "./pages/admin/AdminAllMembers";
 import AdminAddUser from "./pages/admin/AdminAddUser";
 import AdminFoundationContributors from "./pages/admin/AdminFoundationContributors";
-import AdminPlaceholder from "./pages/admin/AdminPlaceholder";
+import AdminDistrictReporting from "./pages/admin/AdminDistrictReporting";
+import AdminYearEndAwards from "./pages/admin/AdminYearEndAwards";
 import { getPostAuthRedirect } from "./utils/access";
 
 function HomeRedirect() {
@@ -76,26 +77,8 @@ function AppRoutes() {
         <Route path="members" element={<AdminAllMembers />} />
         <Route path="settings/users/add" element={<AdminAddUser />} />
         <Route path="payments" element={<AdminFoundationContributors />} />
-        <Route
-          path="reports/district"
-          element={
-            <AdminPlaceholder
-              title="District reporting"
-              description="Proposal §6.5.2 · active counts per district, drill-down roster, CSV export — implementation queued."
-              backTo="/admin"
-            />
-          }
-        />
-        <Route
-          path="reports/awards"
-          element={
-            <AdminPlaceholder
-              title="Year-end club & district awards"
-              description="Proposal §6.5.3 · track new memberships ranked by club and district."
-              backTo="/admin"
-            />
-          }
-        />
+        <Route path="reports/district" element={<AdminDistrictReporting />} />
+        <Route path="reports/awards" element={<AdminYearEndAwards />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

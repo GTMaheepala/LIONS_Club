@@ -32,6 +32,17 @@ function IconStatAdmin() {
   );
 }
 
+function IconStatTopClub() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
 function IconActionUserPlus() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -88,15 +99,18 @@ export default function AdminOverview() {
   const [pending, setPending] = useState(0);
   const [ledgerRows, setLedgerRows] = useState(0);
   const [admins, setAdmins] = useState(0);
+  const [topClubName, setTopClubName] = useState("");
+  const [topClubRows, setTopClubRows] = useState(0);
   const [loadError, setLoadError] = useState("");
 
   const load = useCallback(async () => {
     setLoadError("");
     try {
-      const [pData, allData, ledgerCountRes] = await Promise.all([
+      const [pData, allData, ledgerCountRes, topClubRes] = await Promise.all([
         apiJson("/api/auth/admin/pending-members", { token }),
         apiJson("/api/auth/admin/members", { token }),
         apiJson("/api/contributions/count", { token }),
+        apiJson("/api/contributions/stats/top-club", { token }),
       ]);
       const p = Array.isArray(pData.users) ? pData.users.length : 0;
       const all = Array.isArray(allData.users) ? allData.users : [];
@@ -104,10 +118,16 @@ export default function AdminOverview() {
       const lc = ledgerCountRes?.total;
       setLedgerRows(typeof lc === "number" && Number.isFinite(lc) ? lc : 0);
       setAdmins(all.filter((u) => u.role === "admin").length);
+      const name = typeof topClubRes?.clubName === "string" ? topClubRes.clubName.trim() : "";
+      const rc = topClubRes?.rowCount;
+      setTopClubName(name);
+      setTopClubRows(typeof rc === "number" && Number.isFinite(rc) ? rc : 0);
     } catch (e) {
       setPending(0);
       setLedgerRows(0);
       setAdmins(0);
+      setTopClubName("");
+      setTopClubRows(0);
       setLoadError(e.message || "Could not refresh dashboard counts.");
     }
   }, [token]);
@@ -135,10 +155,15 @@ export default function AdminOverview() {
               <em>pending</em> (public sign-up, or <strong>Add user</strong> without immediate full access).
               With immediate access on, accounts skip this queue — see <strong>Users</strong>.
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p>
               <strong>Lions members</strong> on this dashboard is the total rows in the{" "}
               <strong>All members</strong> contributor ledger (foundation gifts / dues spreadsheet), not
               portal user count.
+            </p>
+            <p style={{ marginBottom: 0 }}>
+              <strong>Largest club</strong> is the club column value with the highest number of ledger
+              rows (same as counting rows on the contributors table — duplicates each count once); rows
+              without a club are excluded.
             </p>
           </div>
         </details>
@@ -175,6 +200,23 @@ export default function AdminOverview() {
           <Link className="lcms-dash-stat-link" to="/admin/payments">
             View contributor ledger
           </Link>
+        </article>
+
+        <article className="lcms-dash-stat lcms-dash-stat--topclub">
+          <div className="lcms-dash-stat-top">
+            <span className="lcms-dash-stat-icon-wrap" aria-hidden>
+              <IconStatTopClub />
+            </span>
+            <span className="lcms-dash-stat-label">Largest club (ledger rows)</span>
+          </div>
+          <strong className="lcms-dash-stat-value">{topClubRows}</strong>
+          {topClubName ? (
+            <span className="lcms-dash-stat-muted lcms-dash-stat-clubname" title={topClubName}>
+              {topClubName}
+            </span>
+          ) : (
+            <span className="lcms-dash-stat-muted">No club attributed in ledger yet</span>
+          )}
         </article>
 
         <article className="lcms-dash-stat lcms-dash-stat--admin">
@@ -239,7 +281,7 @@ export default function AdminOverview() {
               <IconActionMap />
             </span>
             <span className="lcms-dash-action-title">District reporting</span>
-            <span className="lcms-dash-action-desc">Proposal §6.5.2 — module placeholder.</span>
+            <span className="lcms-dash-action-desc">Proposal 6.5.2 — ledger rollup, roster links, CSV summary.</span>
           </Link>
 
           <Link className="lcms-dash-action" to="/admin/reports/awards">
@@ -250,7 +292,7 @@ export default function AdminOverview() {
               <IconActionAward />
             </span>
             <span className="lcms-dash-action-title">Year-end awards</span>
-            <span className="lcms-dash-action-desc">Proposal §6.5.3 — tracking placeholder.</span>
+            <span className="lcms-dash-action-desc">§6.5.3 leaderboard preview — tied to contributor ledger row counts.</span>
           </Link>
         </div>
       </section>
