@@ -219,12 +219,6 @@ export default function AdminYearEndAwards() {
             ← Administrator dashboard
           </Link>
         </div>
-
-        <p className="lcms-awards-footer-note">
-          <strong>Future layer:</strong> filter by Lions fiscal year / calendar slice, badges for “new memberships”
-          vs dues renewals, PDF certificates, CSV for zone chairs — this page is deliberately visual-first until
-          those policies are finalized.
-        </p>
       </div>
     </div>
   );

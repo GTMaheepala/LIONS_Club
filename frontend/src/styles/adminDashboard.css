@@ -565,6 +565,8 @@ a.lcms-dropdown-item {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  /* Align with sidebar and card surfaces (root keeps #eef1f6 behind the shell chrome only). */
+  background: #fff;
 }
 
 .lcms-admin-content {

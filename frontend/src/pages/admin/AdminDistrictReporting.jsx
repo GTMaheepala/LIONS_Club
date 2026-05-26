@@ -216,12 +216,6 @@ export default function AdminDistrictReporting() {
             ← Administrator dashboard
           </Link>
         </div>
-
-        <p className="lcms-awards-footer-note">
-          <strong>Next steps:</strong> membership-based district counts when user profiles ship with district IDs;
-          richer drill-down and saved report presets can layer on once roster data spans beyond the migrated
-          ledger.
-        </p>
       </div>
     </div>
   );
