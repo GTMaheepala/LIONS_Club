@@ -10,6 +10,9 @@ const CSV_COLUMNS = [
   "No",
   "Date",
   "Name",
+  "Email",
+  "Phone",
+  "Address",
   "District",
   "Club",
   "Kind",
@@ -86,6 +89,9 @@ const INITIAL_FORM = {
   contributorTag: "",
   contributionDate: "",
   contributorName: "",
+  email: "",
+  address: "",
+  phoneNumber: "",
   district: "",
   clubName: "",
   paymentKind: "cash",
@@ -136,6 +142,9 @@ function contributorToCsvRow(c) {
     c.entryNumber ?? "",
     isoToDateInput(c.contributionDate),
     c.contributorName,
+    c.email,
+    c.phoneNumber,
+    c.address,
     c.district,
     c.clubName,
     c.paymentKind,
@@ -262,6 +271,9 @@ function csvRowToApiBody(ix, cols) {
     contributorTag: cellAt(ix, cols, "Tag"),
     contributionDate: dateIso,
     contributorName,
+    email: cellAt(ix, cols, "Email"),
+    phoneNumber: cellAt(ix, cols, "Phone"),
+    address: cellAt(ix, cols, "Address"),
     district: cellAt(ix, cols, "District"),
     clubName: cellAt(ix, cols, "Club"),
     paymentKind,
@@ -383,6 +395,9 @@ export default function AdminFoundationContributors() {
       contributorTag: row.contributorTag ?? "",
       contributionDate: isoToDateInput(row.contributionDate),
       contributorName: row.contributorName ?? "",
+      email: row.email ?? "",
+      address: row.address ?? "",
+      phoneNumber: row.phoneNumber ?? "",
       district: row.district ?? "",
       clubName: row.clubName ?? "",
       paymentKind: row.paymentKind,
@@ -415,6 +430,9 @@ export default function AdminFoundationContributors() {
       contributorTag: form.contributorTag,
       contributionDate: form.contributionDate,
       contributorName: form.contributorName.trim(),
+      email: form.email.trim(),
+      address: form.address.trim(),
+      phoneNumber: form.phoneNumber.trim(),
       district: form.district,
       clubName: form.clubName,
       paymentKind: form.paymentKind,
@@ -642,7 +660,7 @@ export default function AdminFoundationContributors() {
             <input
               id="lcms-ledger-q"
               className="lcms-ledger-search-input"
-              placeholder="Search by contributor name, club, district, or notes…"
+              placeholder="Search by contributor name, email, phone, club, district, or notes…"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               autoComplete="off"
@@ -723,6 +741,7 @@ export default function AdminFoundationContributors() {
                 <th>No</th>
                 <th>Date</th>
                 <th>Name</th>
+                <th>Contact</th>
                 <th>District</th>
                 <th>Club</th>
                 <th>Cash (Rs)</th>
@@ -743,6 +762,22 @@ export default function AdminFoundationContributors() {
                   <td>{c.entryNumber != null ? c.entryNumber : "—"}</td>
                   <td>{fmtShort(c.contributionDate)}</td>
                   <td>{c.contributorName}</td>
+                  <td>
+                    {c.email || c.phoneNumber ? (
+                      <>
+                        {c.email ? (
+                          <div style={{ fontSize: "0.85rem" }}>{c.email}</div>
+                        ) : null}
+                        {c.phoneNumber ? (
+                          <div className="lcms-muted" style={{ fontSize: "0.78rem", marginTop: c.email ? 2 : 0 }}>
+                            {c.phoneNumber}
+                          </div>
+                        ) : null}
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td>{c.district || "—"}</td>
                   <td>{c.clubName || "—"}</td>
                   <td>
@@ -847,6 +882,41 @@ export default function AdminFoundationContributors() {
                   placeholder="e.g. Lion Jane Perera"
                 />
               </div>
+
+              <h3 className="lcms-form-section-title">Member contact</h3>
+              <div className="lcms-form-field">
+                <label htmlFor="ff-email">Email</label>
+                <input
+                  id="ff-email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  placeholder="member@example.com"
+                  autoComplete="email"
+                />
+              </div>
+              <div className="lcms-form-field">
+                <label htmlFor="ff-phone">Phone number</label>
+                <input
+                  id="ff-phone"
+                  type="tel"
+                  value={form.phoneNumber}
+                  onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))}
+                  placeholder="+94 77 123 4567"
+                  autoComplete="tel"
+                />
+              </div>
+              <div className="lcms-form-field">
+                <label htmlFor="ff-address">Address</label>
+                <textarea
+                  id="ff-address"
+                  value={form.address}
+                  onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+                  placeholder="Street, city, postal code"
+                  rows={2}
+                />
+              </div>
+
               <div className="lcms-form-row-2">
                 <div className="lcms-form-field">
                   <label htmlFor="ff-dist">District</label>

@@ -10,6 +10,9 @@ const foundationContributionSchema = new mongoose.Schema(
     contributorTag: { type: String, trim: true, default: "" },
     contributionDate: { type: Date, required: true },
     contributorName: { type: String, required: true, trim: true },
+    email: { type: String, trim: true, default: "" },
+    address: { type: String, trim: true, default: "" },
+    phoneNumber: { type: String, trim: true, default: "" },
     district: { type: String, trim: true, default: "" },
     clubName: { type: String, trim: true, default: "" },
     paymentKind: {

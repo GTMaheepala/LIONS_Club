@@ -18,6 +18,9 @@ function serialize(doc) {
     contributorTag: doc.contributorTag ?? "",
     contributionDate: doc.contributionDate ? doc.contributionDate.toISOString() : null,
     contributorName: doc.contributorName,
+    email: doc.email ?? "",
+    address: doc.address ?? "",
+    phoneNumber: doc.phoneNumber ?? "",
     district: doc.district ?? "",
     clubName: doc.clubName ?? "",
     paymentKind: doc.paymentKind,
@@ -62,6 +65,9 @@ function buildCreate(body) {
       contributorTag: String(body.contributorTag ?? "").trim(),
       contributionDate,
       contributorName,
+      email: String(body.email ?? "").trim(),
+      address: String(body.address ?? "").trim(),
+      phoneNumber: String(body.phoneNumber ?? "").trim(),
       district: String(body.district ?? "").trim(),
       clubName: String(body.clubName ?? "").trim(),
       paymentKind,
@@ -100,6 +106,9 @@ function applyPatch(doc, body) {
     if (!n) return "contributorName cannot be empty.";
     doc.contributorName = n;
   }
+  if (body.email !== undefined) doc.email = String(body.email ?? "").trim();
+  if (body.address !== undefined) doc.address = String(body.address ?? "").trim();
+  if (body.phoneNumber !== undefined) doc.phoneNumber = String(body.phoneNumber ?? "").trim();
   if (body.district !== undefined) doc.district = String(body.district ?? "").trim();
   if (body.clubName !== undefined) doc.clubName = String(body.clubName ?? "").trim();
   if (body.paymentKind !== undefined) {
@@ -137,7 +146,15 @@ async function list(req, res) {
 
   if (search) {
     const re = new RegExp(escapeRegex(search), "i");
-    q.$or = [{ contributorName: re }, { clubName: re }, { notes: re }, { flagNote: re }];
+    q.$or = [
+      { contributorName: re },
+      { clubName: re },
+      { email: re },
+      { phoneNumber: re },
+      { address: re },
+      { notes: re },
+      { flagNote: re },
+    ];
   }
 
   const rows = await FoundationContribution.find(q)
